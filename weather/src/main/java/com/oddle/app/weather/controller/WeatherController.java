@@ -1,5 +1,7 @@
 package com.oddle.app.weather.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.oddle.app.weather.dto.HistoricalWeatherResponse;
 import com.oddle.app.weather.dto.WeatherResponse;
 import com.oddle.app.weather.service.WeatherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,5 +27,11 @@ public class WeatherController {
     @GetMapping("/api/v1/weather")
     public WeatherResponse getCurrentWeather(@RequestParam("city") String city) throws IOException {
         return weatherService.getCurrent(city);
+    }
+
+    @GetMapping("/api/v1/historical-weather")
+    public HistoricalWeatherResponse getHistoricalWeather(@RequestParam("city") String city,
+                                                          @RequestParam("date") String date) throws JsonProcessingException {
+        return weatherService.getHistorical(city, date);
     }
 }

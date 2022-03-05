@@ -20,6 +20,7 @@ public class WeatherResponse {
 
     @JsonProperty("city")
     private String city;
+    @JsonProperty("country")
     private String country;
     private double timeZone;
     @JsonProperty("temperature")
@@ -30,7 +31,9 @@ public class WeatherResponse {
     private double tempFeelsLike;
     private double tempMin;
     private double tempMax;
+    @JsonProperty("pressure")
     private double pressure;
+    @JsonProperty("humidity")
     private double humidity;
 
     @JsonIgnoreProperties(ignoreUnknown = true)

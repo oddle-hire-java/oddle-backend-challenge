@@ -28,5 +28,9 @@ public class HistoricalWeatherResponse {
         private double  temp;
         @JsonProperty("weather")
         private ArrayList<OpenWeatherResponse.Weather> weather;
+        @JsonProperty("humidity")
+        private int humidity;
+        @JsonProperty("pressure")
+        private int pressure;
     }
 }

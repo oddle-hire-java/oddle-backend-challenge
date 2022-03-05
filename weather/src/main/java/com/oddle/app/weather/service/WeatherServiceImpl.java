@@ -2,9 +2,12 @@ package com.oddle.app.weather.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.oddle.app.weather.common.Constant;
+import com.oddle.app.weather.dto.HistoricalDto;
 import com.oddle.app.weather.dto.HistoricalWeatherResponse;
 import com.oddle.app.weather.dto.OpenWeatherResponse;
 import com.oddle.app.weather.dto.WeatherResponse;
+import com.oddle.app.weather.mapper.WeatherMapper;
+import com.oddle.app.weather.repository.WeatherRepository;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,10 @@ public class WeatherServiceImpl implements WeatherService {
 
     @Autowired
     GeoCodeService geoCodeService;
+    @Autowired
+    WeatherMapper     mapper;
+    @Autowired
+    WeatherRepository weatherRepository;
 
     WebClient webClient = WebClient.create("https://api.openweathermap.org/data/2.5");
 
@@ -39,7 +46,7 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     @Override
-    public HistoricalWeatherResponse getHistorical(String city, String date) throws JsonProcessingException {
+    public HistoricalDto getHistorical(String city, String date) throws JsonProcessingException {
 
         val geocode = geoCodeService.getLatLonByCity(city);
 
@@ -50,6 +57,18 @@ public class WeatherServiceImpl implements WeatherService {
                 .block();
 
         assert res != null;
-        return res;
+        val dto  = HistoricalDto.builder()
+                .date(res.getCurrent().getDatetime())
+                .temp(res.getCurrent().getTemp())
+                .humidity(res.getCurrent().getHumidity())
+                .pressure(res.getCurrent().getPressure())
+                .weather(res.getCurrent().getWeather().get(0).description)
+                .timezone(res.getTimezone())
+                .build();
+
+        val weatherEntity = mapper.weatherResponseToEntity(city, dto);
+
+        weatherRepository.save(weatherEntity);
+        return dto;
     }
 }
